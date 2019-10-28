@@ -1,6 +1,7 @@
 package com.upgrad.quora.service.dao;
 
 
+import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
 import org.postgresql.util.PSQLException;
@@ -47,4 +48,18 @@ public class UserDao {
             return null;
         }
     }
+    public UserEntity getUser(final String userId){
+        try {
+            return entityManager.createNamedQuery("userById", UserEntity.class).setParameter("uuid", userId)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    public UserAuthTokenEntity createAuthToken(final UserAuthTokenEntity userAuthTokenEntity){
+        entityManager.persist(userAuthTokenEntity);
+        return userAuthTokenEntity;
+    }
+
 }
