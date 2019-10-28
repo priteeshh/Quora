@@ -1,12 +1,14 @@
 package com.upgrad.quora.api.controller;
 
 import com.upgrad.quora.api.model.SigninResponse;
+import com.upgrad.quora.api.model.SignoutResponse;
 import com.upgrad.quora.api.model.SignupUserRequest;
 import com.upgrad.quora.api.model.SignupUserResponse;
 import com.upgrad.quora.service.business.UserBusinessService;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
+import com.upgrad.quora.service.exception.SignOutRestrictedException;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -72,6 +74,22 @@ public class UserController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("access_token", userAuthToken.getAccessToken());
         return new ResponseEntity<SigninResponse>(authorizedUserResponse,headers, HttpStatus.OK);
+
+    }
+
+    @RequestMapping(method = RequestMethod.POST,path = "/user/signout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<SignoutResponse> signOut(@RequestHeader("authorization") final String authorizationToken) throws SignOutRestrictedException {
+        String[] bearerToken = authorizationToken.split("Bearer ");
+        UserAuthTokenEntity userAuthTokenEntity = new UserAuthTokenEntity();
+        if(bearerToken.length == 1){
+             userAuthTokenEntity = userBusinessService.getUserAuthToken(bearerToken[0]);
+        }else{
+             userAuthTokenEntity = userBusinessService.getUserAuthToken(bearerToken[1]);
+        }
+        //UserAuthTokenEntity userAuthTokenEntity = userBusinessService.getUserAuthToken(bearerToken[1]);
+
+        SignoutResponse signoutResponse = new SignoutResponse().id(userAuthTokenEntity.getUuid()).message("SIGNED OUT SUCCESSFULLY");
+        return new ResponseEntity<SignoutResponse>(signoutResponse,HttpStatus.OK);
 
     }
 
