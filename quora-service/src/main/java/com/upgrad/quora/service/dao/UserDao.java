@@ -1,6 +1,7 @@
 package com.upgrad.quora.service.dao;
 
 
+import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
@@ -76,6 +77,11 @@ public class UserDao {
     }
     public void deleteUser(final UserEntity userEntity){
         entityManager.remove(userEntity);
+    }
+
+    public QuestionEntity createQuestion(QuestionEntity questionEntity) {
+        entityManager.persist(questionEntity);
+        return questionEntity;
     }
 
 }
