@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class QuestionBusinessService {
     @Autowired
@@ -40,5 +42,19 @@ public class QuestionBusinessService {
     @Transactional(propagation = Propagation.REQUIRED)
     public QuestionEntity createQuestion(QuestionEntity questionEntity) {
         return userDao.createQuestion(questionEntity);
+    }
+    public UserAuthTokenEntity getUserAuthTokenForGetQuestions(final String authorizationToken) throws AuthorizationFailedException {
+        UserAuthTokenEntity userAuthTokenEntity = userDao.getUserAuthToken(authorizationToken);
+        if(userAuthTokenEntity == null){
+            throw new AuthorizationFailedException("ATHR-001","User has not signed in");
+        }
+        if(userAuthTokenEntity.getLogoutAt() != null){
+            throw new AuthorizationFailedException("ATHR-002","User is signed out.Sign in first to get all questions");
+        }
+
+        return userAuthTokenEntity;
+    }
+    public List<QuestionEntity> getAllQuestions(){
+        return userDao.getAllQuestions();
     }
 }
