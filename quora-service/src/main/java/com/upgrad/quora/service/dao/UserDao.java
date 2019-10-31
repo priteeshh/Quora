@@ -90,5 +90,18 @@ public class UserDao {
         List<QuestionEntity> questiontList = entityManager.createNamedQuery("getAllQuestions", QuestionEntity.class).getResultList();
         return questiontList;
     }
+    public QuestionEntity getQuestionById(String questionId){
+        try {
+            return entityManager.createNamedQuery("getQuestionById", QuestionEntity.class).setParameter("uuid", questionId)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+    public QuestionEntity editQuestion(QuestionEntity questionEntity,String updatedQuestion){
+        questionEntity.setContent(updatedQuestion);
+        entityManager.merge(questionEntity);
+        return questionEntity;
+    }
 
 }
