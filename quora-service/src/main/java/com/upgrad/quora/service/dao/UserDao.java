@@ -104,4 +104,8 @@ public class UserDao {
         return questionEntity;
     }
 
+    public void deleteQuestion(QuestionEntity questionEntity){
+         entityManager.remove(questionEntity);
+    }
+
 }
