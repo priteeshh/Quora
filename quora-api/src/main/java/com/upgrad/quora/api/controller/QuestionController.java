@@ -103,4 +103,27 @@ public class QuestionController {
         QuestionDeleteResponse questionDeleteResponse = new QuestionDeleteResponse().id(questionEntity.getUuid()).status("QUESTION DELETED");
         return new ResponseEntity<QuestionDeleteResponse>(questionDeleteResponse,HttpStatus.OK);
     }
+
+    @RequestMapping(method = RequestMethod.GET  , path = "question/all/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsOfUser(@RequestHeader("authorization") final String authorizationToken, @PathVariable("userId") String userId) throws AuthorizationFailedException, UserNotFoundException {
+        String[] bearerToken = authorizationToken.split("Bearer ");
+        UserAuthTokenEntity userAuthTokenEntity = new UserAuthTokenEntity();
+        if(bearerToken.length == 1){
+            userAuthTokenEntity = questionBusinessService.getUserAuthTokenForGettingAllQuestionsOfUser(bearerToken[0]);
+        }else{
+            userAuthTokenEntity = questionBusinessService.getUserAuthTokenForGettingAllQuestionsOfUser(bearerToken[1]);
+        }
+        List<QuestionEntity> questions = questionBusinessService.getAllQuestionsOfUser(userId);
+        List<QuestionDetailsResponse> allQuestionOfUserResponseList = new ArrayList<QuestionDetailsResponse>();
+        for (ListIterator<QuestionEntity> iter = questions.listIterator(); iter.hasNext(); ) {
+            QuestionEntity question = iter.next();
+            QuestionDetailsResponse questionResponse = new QuestionDetailsResponse();
+            questionResponse.setId(question.getUuid());
+            questionResponse.setContent(question.getContent());
+            allQuestionOfUserResponseList.add(questionResponse);
+        }
+
+        return new ResponseEntity<List<QuestionDetailsResponse>>(allQuestionOfUserResponseList, HttpStatus.OK);
+    }
+
 }

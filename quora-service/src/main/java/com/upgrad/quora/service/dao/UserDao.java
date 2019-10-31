@@ -108,4 +108,12 @@ public class UserDao {
          entityManager.remove(questionEntity);
     }
 
+    public List<QuestionEntity> getAllQuestionsOfUser(final UserEntity user){
+        try {
+            return entityManager.createNamedQuery("getQuestionByUserId", QuestionEntity.class).setParameter("user", user).getResultList();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
 }

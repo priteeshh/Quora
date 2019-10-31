@@ -104,4 +104,24 @@ public class QuestionBusinessService {
         userDao.deleteQuestion(questionEntity);
         return questionEntity;
     }
+
+    public UserAuthTokenEntity getUserAuthTokenForGettingAllQuestionsOfUser(final String authorizationToken) throws AuthorizationFailedException {
+        UserAuthTokenEntity userAuthTokenEntity = userDao.getUserAuthToken(authorizationToken);
+        if(userAuthTokenEntity == null){
+            throw new AuthorizationFailedException("ATHR-001","User has not signed in");
+        }
+        if(userAuthTokenEntity.getLogoutAt() != null){
+            throw new AuthorizationFailedException("ATHR-002","User is signed out.Sign in first to get all questions posted by a specific user");
+        }
+        return userAuthTokenEntity;
+    }
+
+    public List<QuestionEntity> getAllQuestionsOfUser(final String userId) throws UserNotFoundException {
+        UserEntity userEntity = userDao.getUser(userId);
+        List<QuestionEntity> allQuestionsOfUser = userDao.getAllQuestionsOfUser(userEntity);
+        if(allQuestionsOfUser.isEmpty()){
+            throw new UserNotFoundException("USR-001","User with entered uuid whose question details are to be seen does not exist");
+        }
+        return allQuestionsOfUser;
+    }
 }
