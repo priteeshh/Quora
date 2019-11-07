@@ -1,6 +1,7 @@
 package com.upgrad.quora.service.dao;
 
 
+import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
@@ -10,7 +11,9 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.sql.SQLException;
+import java.util.List;
 
 @Repository
 public class UserDao {
@@ -76,6 +79,41 @@ public class UserDao {
     }
     public void deleteUser(final UserEntity userEntity){
         entityManager.remove(userEntity);
+    }
+
+    public QuestionEntity createQuestion(QuestionEntity questionEntity) {
+        entityManager.persist(questionEntity);
+        return questionEntity;
+    }
+
+    public List<QuestionEntity> getAllQuestions(){
+        List<QuestionEntity> questiontList = entityManager.createNamedQuery("getAllQuestions", QuestionEntity.class).getResultList();
+        return questiontList;
+    }
+    public QuestionEntity getQuestionById(String questionId){
+        try {
+            return entityManager.createNamedQuery("getQuestionById", QuestionEntity.class).setParameter("uuid", questionId)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+    public QuestionEntity editQuestion(QuestionEntity questionEntity,String updatedQuestion){
+        questionEntity.setContent(updatedQuestion);
+        entityManager.merge(questionEntity);
+        return questionEntity;
+    }
+
+    public void deleteQuestion(QuestionEntity questionEntity){
+         entityManager.remove(questionEntity);
+    }
+
+    public List<QuestionEntity> getAllQuestionsOfUser(final UserEntity user){
+        try {
+            return entityManager.createNamedQuery("getQuestionByUserId", QuestionEntity.class).setParameter("user", user).getResultList();
+        } catch (NoResultException nre) {
+            return null;
+        }
     }
 
 }
