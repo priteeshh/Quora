@@ -138,4 +138,13 @@ public class UserDao {
     public void deleteAnswer(AnswerEntity answerEntity){
         entityManager.remove(answerEntity);
     }
+
+    public List<AnswerEntity> getAllAnswersOfQuestion(final QuestionEntity question){
+        try {
+            return entityManager.createNamedQuery("getAnswersByQuestionId", AnswerEntity.class).setParameter("question", question).getResultList();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
 }

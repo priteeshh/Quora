@@ -16,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.UUID;
 
 @RestController
@@ -79,5 +82,29 @@ public class AnswerController {
 
         AnswerDeleteResponse answerDeleteResponse = new AnswerDeleteResponse().id(answerEntity.getUuid()).status("ANSWER DELETED");
         return new ResponseEntity<AnswerDeleteResponse>(answerDeleteResponse,HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "answer/all/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<AnswerDetailsResponse>> getAllAnswersForQuestion(@RequestHeader("authorization") final String authorizationToken, @PathVariable("questionId") String questionId) throws AuthorizationFailedException, InvalidQuestionException, UserNotFoundException {
+        String[] bearerToken = authorizationToken.split("Bearer ");
+        QuestionEntity questionEntity = answerBusinessService.getQuestion(questionId);
+        List<AnswerEntity> answerEntity = new ArrayList<AnswerEntity>();
+
+        if(bearerToken.length == 1){
+            answerEntity = answerBusinessService.getAllAnswersOfQuestion(bearerToken[0],questionEntity);
+        }else{
+            answerEntity = answerBusinessService.getAllAnswersOfQuestion(bearerToken[1],questionEntity);
+        }
+        List<AnswerDetailsResponse> allAnswers = new ArrayList<AnswerDetailsResponse>();
+
+        for (ListIterator<AnswerEntity> iter = answerEntity.listIterator(); iter.hasNext(); ) {
+            AnswerEntity answer = iter.next();
+            AnswerDetailsResponse answerDetailsResponse = new AnswerDetailsResponse();
+            answerDetailsResponse.setId(answer.getUuid());
+            answerDetailsResponse.setQuestionContent(questionEntity.getContent());
+            answerDetailsResponse.setAnswerContent(answer.getAns());
+            allAnswers.add(answerDetailsResponse);
+        }
+        return new ResponseEntity<List<AnswerDetailsResponse>>(allAnswers,HttpStatus.OK);
     }
 }

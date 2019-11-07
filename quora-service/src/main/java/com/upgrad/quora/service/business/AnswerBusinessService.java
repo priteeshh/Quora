@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class AnswerBusinessService {
     @Autowired
@@ -84,4 +86,18 @@ public class AnswerBusinessService {
         return answerEntity;
     }
 
+    public List<AnswerEntity> getAllAnswersOfQuestion(final String authorizationToken, final QuestionEntity question) throws UserNotFoundException, AuthorizationFailedException {
+        UserAuthTokenEntity userAuthTokenEntity = userDao.getUserAuthToken(authorizationToken);
+        if(userAuthTokenEntity == null){
+            throw new AuthorizationFailedException("ATHR-001","User has not signed in");
+        }
+        if(userAuthTokenEntity.getLogoutAt() != null){
+            throw new AuthorizationFailedException("ATHR-002","User is signed out.Sign in first to get the answers");
+        }
+        List<AnswerEntity> allAnswers = userDao.getAllAnswersOfQuestion(question);
+        if(allAnswers.isEmpty()){
+            throw new UserNotFoundException("USR-001","User with entered uuid whose question details are to be seen does not exist");
+        }
+        return allAnswers;
+    }
 }
