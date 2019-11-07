@@ -62,4 +62,26 @@ public class AnswerBusinessService {
         }
         return userDao.editAnswer(answerEntity,answerEditContent);
     }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public AnswerEntity deleteAnswer(final String authorizationToken,final String answerId) throws AuthorizationFailedException, InvalidQuestionException {
+        UserAuthTokenEntity userAuthTokenEntity = userDao.getUserAuthToken(authorizationToken);
+        if(userAuthTokenEntity == null){
+            throw new AuthorizationFailedException("ATHR-001","User has not signed in");
+        }
+        if(userAuthTokenEntity.getLogoutAt() != null){
+            throw new AuthorizationFailedException("ATHR-002","User is signed out.Sign in first to delete an answer");
+        }
+        AnswerEntity answerEntity = userDao.getAnswerById(answerId);
+        if(answerEntity == null){
+            throw new InvalidQuestionException("ANS-001","Entered answer uuid does not exist");
+        }
+        UserEntity userEntity = userDao.getUser(userAuthTokenEntity.getUuid());
+        if(!answerEntity.getUser().getId().equals(userEntity.getId()) && userEntity.getRole().equals("nonadmin")){
+            throw new AuthorizationFailedException("ATHR-003","Only the answer owner or admin can delete the answer");
+        }
+        userDao.deleteAnswer(answerEntity);
+        return answerEntity;
+    }
+
 }
