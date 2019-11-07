@@ -135,5 +135,7 @@ public class UserDao {
         entityManager.merge(answerEntity);
         return answerEntity;
     }
-
+    public void deleteAnswer(AnswerEntity answerEntity){
+        entityManager.remove(answerEntity);
+    }
 }
