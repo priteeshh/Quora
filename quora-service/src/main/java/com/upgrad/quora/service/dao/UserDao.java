@@ -122,4 +122,18 @@ public class UserDao {
         return answerEntity;
     }
 
+    public AnswerEntity getAnswerById(String answerId){
+        try {
+            return entityManager.createNamedQuery("getAnswerById", AnswerEntity.class).setParameter("uuid", answerId)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+    public AnswerEntity editAnswer(AnswerEntity answerEntity,String updatedAnswer){
+        answerEntity.setAns(updatedAnswer);
+        entityManager.merge(answerEntity);
+        return answerEntity;
+    }
+
 }
