@@ -1,6 +1,7 @@
 package com.upgrad.quora.service.dao;
 
 
+import com.upgrad.quora.service.entity.AnswerEntity;
 import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
@@ -114,6 +115,11 @@ public class UserDao {
         } catch (NoResultException nre) {
             return null;
         }
+    }
+
+    public AnswerEntity createAnswer(AnswerEntity answerEntity) {
+        entityManager.persist(answerEntity);
+        return answerEntity;
     }
 
 }
