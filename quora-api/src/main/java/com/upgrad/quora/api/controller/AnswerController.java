@@ -1,5 +1,7 @@
 package com.upgrad.quora.api.controller;
 
+import com.upgrad.quora.api.model.AnswerEditRequest;
+import com.upgrad.quora.api.model.AnswerEditResponse;
 import com.upgrad.quora.api.model.AnswerRequest;
 import com.upgrad.quora.api.model.AnswerResponse;
 import com.upgrad.quora.service.business.AnswerBusinessService;
@@ -50,4 +52,21 @@ public class AnswerController {
 
         return new ResponseEntity<AnswerResponse>(answerResponse, HttpStatus.CREATED);
     }
+
+   @RequestMapping(method = RequestMethod.PUT, path = "/answer/edit/{answerId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<AnswerEditResponse> editAnswer(@RequestHeader("authorization") final String authorizationToken, @PathVariable("answerId") String answerId, final AnswerEditRequest answerRequest) throws AuthorizationFailedException, InvalidQuestionException, UserNotFoundException {
+        String[] bearerToken = authorizationToken.split("Bearer ");
+        UserAuthTokenEntity userAuthTokenEntity = new UserAuthTokenEntity();
+
+        if(bearerToken.length == 1){
+            userAuthTokenEntity = answerBusinessService.getUserAuthToken(bearerToken[0]);
+        }else{
+            userAuthTokenEntity = answerBusinessService.getUserAuthToken(bearerToken[1]);
+        }
+        UserEntity userEntity = answerBusinessService.getUser(userAuthTokenEntity.getUuid());
+        AnswerEntity answerEntity = answerBusinessService.editAnswer(answerId,userEntity,answerRequest.getContent());
+        AnswerEditResponse answerResponse = new AnswerEditResponse().id(answerEntity.getUuid()).status("ANSWER EDITED");
+        return new ResponseEntity<AnswerEditResponse>(answerResponse, HttpStatus.OK);
+    }
+
 }

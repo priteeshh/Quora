@@ -50,4 +50,16 @@ public class AnswerBusinessService {
         userDao.createAnswer(answerEntity);
         return answerEntity;
     }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public AnswerEntity editAnswer(final String answerId,final UserEntity loggedInUser ,final String answerEditContent) throws AuthorizationFailedException, InvalidQuestionException {
+        AnswerEntity answerEntity = userDao.getAnswerById(answerId);
+        if(answerEntity == null){
+            throw new InvalidQuestionException("ANS-001","Entered answer uuid does not exist");
+        }
+        if(!answerEntity.getUser().getId().equals(loggedInUser.getId())){
+            throw new AuthorizationFailedException("ATHR-003","Only the answer owner can edit the answer");
+        }
+        return userDao.editAnswer(answerEntity,answerEditContent);
+    }
 }
