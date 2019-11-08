@@ -1,6 +1,7 @@
 package com.upgrad.quora.service.dao;
 
 
+import com.upgrad.quora.service.entity.AnswerEntity;
 import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
@@ -111,6 +112,36 @@ public class UserDao {
     public List<QuestionEntity> getAllQuestionsOfUser(final UserEntity user){
         try {
             return entityManager.createNamedQuery("getQuestionByUserId", QuestionEntity.class).setParameter("user", user).getResultList();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    public AnswerEntity createAnswer(AnswerEntity answerEntity) {
+        entityManager.persist(answerEntity);
+        return answerEntity;
+    }
+
+    public AnswerEntity getAnswerById(String answerId){
+        try {
+            return entityManager.createNamedQuery("getAnswerById", AnswerEntity.class).setParameter("uuid", answerId)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+    public AnswerEntity editAnswer(AnswerEntity answerEntity,String updatedAnswer){
+        answerEntity.setAns(updatedAnswer);
+        entityManager.merge(answerEntity);
+        return answerEntity;
+    }
+    public void deleteAnswer(AnswerEntity answerEntity){
+        entityManager.remove(answerEntity);
+    }
+
+    public List<AnswerEntity> getAllAnswersOfQuestion(final QuestionEntity question){
+        try {
+            return entityManager.createNamedQuery("getAnswersByQuestionId", AnswerEntity.class).setParameter("question", question).getResultList();
         } catch (NoResultException nre) {
             return null;
         }
