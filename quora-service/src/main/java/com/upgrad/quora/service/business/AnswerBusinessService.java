@@ -86,6 +86,14 @@ public class AnswerBusinessService {
         return answerEntity;
     }
 
+    public QuestionEntity getQuestionToGetAllAnswers(final String questionId) throws AuthorizationFailedException, InvalidQuestionException {
+        QuestionEntity questionEntity = userDao.getQuestionById(questionId);
+        if(questionEntity == null){
+            throw new InvalidQuestionException("QUES-001","The question with entered uuid whose details are to be seen does not exist");
+        }
+        return questionEntity;
+    }
+
     public List<AnswerEntity> getAllAnswersOfQuestion(final String authorizationToken, final QuestionEntity question) throws UserNotFoundException, AuthorizationFailedException {
         UserAuthTokenEntity userAuthTokenEntity = userDao.getUserAuthToken(authorizationToken);
         if(userAuthTokenEntity == null){

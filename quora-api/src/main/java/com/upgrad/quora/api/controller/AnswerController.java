@@ -87,7 +87,7 @@ public class AnswerController {
     @RequestMapping(method = RequestMethod.GET, path = "answer/all/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<AnswerDetailsResponse>> getAllAnswersForQuestion(@RequestHeader("authorization") final String authorizationToken, @PathVariable("questionId") String questionId) throws AuthorizationFailedException, InvalidQuestionException, UserNotFoundException {
         String[] bearerToken = authorizationToken.split("Bearer ");
-        QuestionEntity questionEntity = answerBusinessService.getQuestion(questionId);
+        QuestionEntity questionEntity = answerBusinessService.getQuestionToGetAllAnswers(questionId);
         List<AnswerEntity> answerEntity = new ArrayList<AnswerEntity>();
 
         if(bearerToken.length == 1){

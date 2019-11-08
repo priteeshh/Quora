@@ -33,7 +33,7 @@ public class QuestionEntity {
     @NotNull
     private ZonedDateTime date;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "USER_ID")
     private UserEntity user;
 
