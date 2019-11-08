@@ -4,6 +4,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -77,6 +79,9 @@ public class UserEntity implements Serializable{
     @Column(name = "CONTACTNUMBER")
     @Size(max = 30)
     private String contactnumber;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<QuestionEntity> question = new ArrayList<>();
 
     public Integer getId() {
         return id;

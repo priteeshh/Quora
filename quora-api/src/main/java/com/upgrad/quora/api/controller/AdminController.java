@@ -20,13 +20,15 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
     @Autowired
     private AdminBusinessService adminBusinessService;
-    @RequestMapping(method = RequestMethod.DELETE,path = "/admin/user/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<UserDeleteResponse> deleteUser(@PathVariable("userId")final String userId, @RequestHeader("authorization") final String authorizationToken) throws AuthorizationFailedException, UserNotFoundException {
+
+    // Endpoint to delete a user on the whole from the database completely using the user ID.
+    @RequestMapping(method = RequestMethod.DELETE, path = "/admin/user/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<UserDeleteResponse> deleteUser(@PathVariable("userId") final String userId, @RequestHeader("authorization") final String authorizationToken) throws AuthorizationFailedException, UserNotFoundException {
         String[] bearerToken = authorizationToken.split("Bearer ");
         UserAuthTokenEntity userAuthTokenEntity = new UserAuthTokenEntity();
-        if(bearerToken.length == 1){
+        if (bearerToken.length == 1) {
             userAuthTokenEntity = adminBusinessService.getUserAuthToken(bearerToken[0]);
-        }else{
+        } else {
             userAuthTokenEntity = adminBusinessService.getUserAuthToken(bearerToken[1]);
         }
 

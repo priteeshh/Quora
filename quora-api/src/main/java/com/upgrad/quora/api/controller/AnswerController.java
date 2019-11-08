@@ -27,6 +27,7 @@ public class AnswerController {
     @Autowired
     private AnswerBusinessService answerBusinessService;
 
+    // This endpoint creates an answer for the concerned question by the user currently logged in.
     @RequestMapping(method = RequestMethod.POST, path = "/question/{questionId}/answer/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AnswerResponse> createAnswer(@RequestHeader("authorization") final String authorizationToken, @PathVariable("questionId") final String questionId, final AnswerRequest answerRequest) throws AuthorizationFailedException, InvalidQuestionException, UserNotFoundException {
         String[] bearerToken = authorizationToken.split("Bearer ");
@@ -53,7 +54,8 @@ public class AnswerController {
         return new ResponseEntity<AnswerResponse>(answerResponse, HttpStatus.CREATED);
     }
 
-   @RequestMapping(method = RequestMethod.PUT, path = "/answer/edit/{answerId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    // This endpoint enables the user to edit an answer that he/she has already posted.
+    @RequestMapping(method = RequestMethod.PUT, path = "/answer/edit/{answerId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AnswerEditResponse> editAnswer(@RequestHeader("authorization") final String authorizationToken, @PathVariable("answerId") String answerId, final AnswerEditRequest answerRequest) throws AuthorizationFailedException, InvalidQuestionException, UserNotFoundException {
         String[] bearerToken = authorizationToken.split("Bearer ");
         UserAuthTokenEntity userAuthTokenEntity = new UserAuthTokenEntity();
@@ -68,6 +70,8 @@ public class AnswerController {
         AnswerEditResponse answerResponse = new AnswerEditResponse().id(answerEntity.getUuid()).status("ANSWER EDITED");
         return new ResponseEntity<AnswerEditResponse>(answerResponse, HttpStatus.OK);
     }
+
+    // This endpoint helps the user to delete an answer that was posted.
     @RequestMapping(method = RequestMethod.DELETE, path = "/answer/delete/{answerId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AnswerDeleteResponse> deleteAnswer(@RequestHeader("authorization") final String authorizationToken, @PathVariable("answerId") String answerId) throws AuthorizationFailedException, InvalidQuestionException {
         String[] bearerToken = authorizationToken.split("Bearer ");
@@ -84,10 +88,11 @@ public class AnswerController {
         return new ResponseEntity<AnswerDeleteResponse>(answerDeleteResponse,HttpStatus.OK);
     }
 
+    // This endpoint fetches all the answers posted by every user for a given question.
     @RequestMapping(method = RequestMethod.GET, path = "answer/all/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<AnswerDetailsResponse>> getAllAnswersForQuestion(@RequestHeader("authorization") final String authorizationToken, @PathVariable("questionId") String questionId) throws AuthorizationFailedException, InvalidQuestionException, UserNotFoundException {
         String[] bearerToken = authorizationToken.split("Bearer ");
-        QuestionEntity questionEntity = answerBusinessService.getQuestion(questionId);
+        QuestionEntity questionEntity = answerBusinessService.getQuestionToGetAllAnswers(questionId);
         List<AnswerEntity> answerEntity = new ArrayList<AnswerEntity>();
 
         if(bearerToken.length == 1){
