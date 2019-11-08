@@ -34,11 +34,11 @@ public class AnswerEntity {
     @NotNull
     private ZonedDateTime date;
 
-    @ManyToOne(cascade = CascadeType.DETACH)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "USER_ID")
     private UserEntity user;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "QUESTION_ID")
     private QuestionEntity question;
 
