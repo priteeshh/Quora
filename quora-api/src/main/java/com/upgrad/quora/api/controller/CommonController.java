@@ -20,7 +20,7 @@ public class CommonController {
     @Autowired
     private CommonBusinessService commonBusinessService;
 
-
+    // This endpoint is called to fetch the details of the user who is logged in at the given time.
     @RequestMapping(method = RequestMethod.GET, path = "/userprofile/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UserDetailsResponse> getUser(@PathVariable("userId")final String userId, @RequestHeader("authorization")  final String authorizationToken) throws UserNotFoundException, AuthorizationFailedException {
         String[] bearerToken = authorizationToken.split("Bearer ");

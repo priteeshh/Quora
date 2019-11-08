@@ -26,13 +26,18 @@ public class QuestionController {
     @Autowired
     private QuestionBusinessService questionBusinessService;
 
+    /*
+     * This endpoint is used to help user create a question and post.
+     * The created question has a unique ID generated for it.
+     * The newly created question will have a timestamp and mapped to the user who posted it.
+     */
     @RequestMapping(method = RequestMethod.POST, path = "/question/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionResponse> createQuestion(@RequestHeader("authorization") final String authorizationToken, final QuestionRequest questionRequest) throws UserNotFoundException, AuthorizationFailedException {
         String[] bearerToken = authorizationToken.split("Bearer ");
         UserAuthTokenEntity userAuthTokenEntity = new UserAuthTokenEntity();
-        if(bearerToken.length == 1){
+        if (bearerToken.length == 1) {
             userAuthTokenEntity = questionBusinessService.getUserAuthToken(bearerToken[0]);
-        }else{
+        } else {
             userAuthTokenEntity = questionBusinessService.getUserAuthToken(bearerToken[1]);
         }
 
@@ -51,13 +56,14 @@ public class QuestionController {
 
     }
 
+    // This endpoint is called to fetch all the questions posted in the database.
     @RequestMapping(method = RequestMethod.GET, path = "/question/all", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(@RequestHeader("authorization") final String authorizationToken) throws AuthorizationFailedException {
         String[] bearerToken = authorizationToken.split("Bearer ");
         UserAuthTokenEntity userAuthTokenEntity = new UserAuthTokenEntity();
-        if(bearerToken.length == 1){
+        if (bearerToken.length == 1) {
             userAuthTokenEntity = questionBusinessService.getUserAuthTokenForGetQuestions(bearerToken[0]);
-        }else{
+        } else {
             userAuthTokenEntity = questionBusinessService.getUserAuthTokenForGetQuestions(bearerToken[1]);
         }
 
@@ -74,43 +80,46 @@ public class QuestionController {
         return new ResponseEntity<List<QuestionDetailsResponse>>(questionResponseList, HttpStatus.OK);
     }
 
+    // This endpoint is called to edit an already existing question in the database.
     @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<QuestionEditResponse> editQuestion(@RequestHeader("authorization") final String authorizationToken, @PathVariable("questionId") String questionId,final QuestionRequest questionRequest) throws AuthorizationFailedException, InvalidQuestionException {
+    public ResponseEntity<QuestionEditResponse> editQuestion(@RequestHeader("authorization") final String authorizationToken, @PathVariable("questionId") String questionId, final QuestionRequest questionRequest) throws AuthorizationFailedException, InvalidQuestionException {
         String[] bearerToken = authorizationToken.split("Bearer ");
         UserEntity loggedInUserEntity = new UserEntity();
 
-        if(bearerToken.length == 1){
+        if (bearerToken.length == 1) {
             loggedInUserEntity = questionBusinessService.getLoggedInUserDetailsGetEditQuestion(bearerToken[0]);
-        }else{
+        } else {
             loggedInUserEntity = questionBusinessService.getLoggedInUserDetailsGetEditQuestion(bearerToken[1]);
         }
-       QuestionEntity questionEntity = questionBusinessService.editQuestion(questionId,loggedInUserEntity,questionRequest.getContent());
+        QuestionEntity questionEntity = questionBusinessService.editQuestion(questionId, loggedInUserEntity, questionRequest.getContent());
         QuestionEditResponse questionEditResponse = new QuestionEditResponse().id(questionEntity.getUuid()).status("QUESTION EDITED");
 
         return new ResponseEntity<QuestionEditResponse>(questionEditResponse, HttpStatus.OK);
     }
 
+    // This endpoint is called to delete the question in concern.
     @RequestMapping(method = RequestMethod.DELETE, path = "/question/delete/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionDeleteResponse> deleteQuestion(@RequestHeader("authorization") final String authorizationToken, @PathVariable("questionId") String questionId) throws AuthorizationFailedException, InvalidQuestionException {
         String[] bearerToken = authorizationToken.split("Bearer ");
         QuestionEntity questionEntity = new QuestionEntity();
 
-        if(bearerToken.length == 1){
-            questionEntity = questionBusinessService.getUserAuthTokenForDeleteQuestion(bearerToken[0],questionId);
-        }else{
-            questionEntity = questionBusinessService.getUserAuthTokenForDeleteQuestion(bearerToken[1],questionId);
+        if (bearerToken.length == 1) {
+            questionEntity = questionBusinessService.getUserAuthTokenForDeleteQuestion(bearerToken[0], questionId);
+        } else {
+            questionEntity = questionBusinessService.getUserAuthTokenForDeleteQuestion(bearerToken[1], questionId);
         }
         QuestionDeleteResponse questionDeleteResponse = new QuestionDeleteResponse().id(questionEntity.getUuid()).status("QUESTION DELETED");
-        return new ResponseEntity<QuestionDeleteResponse>(questionDeleteResponse,HttpStatus.OK);
+        return new ResponseEntity<QuestionDeleteResponse>(questionDeleteResponse, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.GET  , path = "question/all/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    // This endpoint is called to fetch all the questions posted by the currently logged in user.
+    @RequestMapping(method = RequestMethod.GET, path = "question/all/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsOfUser(@RequestHeader("authorization") final String authorizationToken, @PathVariable("userId") String userId) throws AuthorizationFailedException, UserNotFoundException {
         String[] bearerToken = authorizationToken.split("Bearer ");
         UserAuthTokenEntity userAuthTokenEntity = new UserAuthTokenEntity();
-        if(bearerToken.length == 1){
+        if (bearerToken.length == 1) {
             userAuthTokenEntity = questionBusinessService.getUserAuthTokenForGettingAllQuestionsOfUser(bearerToken[0]);
-        }else{
+        } else {
             userAuthTokenEntity = questionBusinessService.getUserAuthTokenForGettingAllQuestionsOfUser(bearerToken[1]);
         }
         List<QuestionEntity> questions = questionBusinessService.getAllQuestionsOfUser(userId);
