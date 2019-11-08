@@ -20,22 +20,13 @@ import java.util.List;
 public class UserDao {
     @PersistenceContext
     private EntityManager entityManager;
+
+    //Methods for user controller
     public UserEntity createUser(UserEntity userEntity) throws SignUpRestrictedException {
-
-//        UserEntity userByUsername = getUserByUsername(userEntity.getUsername());
-//        if(userByUsername == null){
-//            UserEntity userByEmail = getUserByEmail(userEntity.getEmail());
-//            if(userByEmail == null){
-//                entityManager.persist(userEntity);
-//                return userEntity;
-//            }
-//            throw new SignUpRestrictedException("SGR-002","This user has already been registered, try with any other emailId");
-//        }
-//        throw new SignUpRestrictedException("SGR-001","Try any other Username, this Username has already been taken");
-
         entityManager.persist(userEntity);
         return userEntity;
     }
+
     public UserEntity getUserByEmail(final String email) {
         try {
             return entityManager.createNamedQuery("userByEmail", UserEntity.class).setParameter("email", email)
@@ -44,6 +35,7 @@ public class UserDao {
             return null;
         }
     }
+
     public UserEntity getUserByUsername(final String username) {
         try {
             return entityManager.createNamedQuery("userByUsername", UserEntity.class).setParameter("username", username)
@@ -52,7 +44,8 @@ public class UserDao {
             return null;
         }
     }
-    public UserEntity getUser(final String userId){
+
+    public UserEntity getUser(final String userId) {
         try {
             return entityManager.createNamedQuery("userById", UserEntity.class).setParameter("uuid", userId)
                     .getSingleResult();
@@ -61,37 +54,41 @@ public class UserDao {
         }
     }
 
-    public UserAuthTokenEntity createAuthToken(final UserAuthTokenEntity userAuthTokenEntity){
+    public UserAuthTokenEntity createAuthToken(final UserAuthTokenEntity userAuthTokenEntity) {
         entityManager.persist(userAuthTokenEntity);
         return userAuthTokenEntity;
     }
 
-    public UserAuthTokenEntity getUserAuthToken(final String accessToken){
+    public UserAuthTokenEntity getUserAuthToken(final String accessToken) {
         try {
             return entityManager.createNamedQuery("userAuthTokenByAccessToken",
                     UserAuthTokenEntity.class).setParameter("accessToken", accessToken).getSingleResult();
-        } catch (NoResultException nre){
+        } catch (NoResultException nre) {
             return null;
         }
     }
 
-    public void updateUserAuthToken(final UserAuthTokenEntity userAuthTokenEntity){
+    public void updateUserAuthToken(final UserAuthTokenEntity userAuthTokenEntity) {
         entityManager.merge(userAuthTokenEntity);
     }
-    public void deleteUser(final UserEntity userEntity){
+
+    public void deleteUser(final UserEntity userEntity) {
         entityManager.remove(userEntity);
     }
 
+
+    //Methods for Question controller
     public QuestionEntity createQuestion(QuestionEntity questionEntity) {
         entityManager.persist(questionEntity);
         return questionEntity;
     }
 
-    public List<QuestionEntity> getAllQuestions(){
+    public List<QuestionEntity> getAllQuestions() {
         List<QuestionEntity> questiontList = entityManager.createNamedQuery("getAllQuestions", QuestionEntity.class).getResultList();
         return questiontList;
     }
-    public QuestionEntity getQuestionById(String questionId){
+
+    public QuestionEntity getQuestionById(String questionId) {
         try {
             return entityManager.createNamedQuery("getQuestionById", QuestionEntity.class).setParameter("uuid", questionId)
                     .getSingleResult();
@@ -99,17 +96,18 @@ public class UserDao {
             return null;
         }
     }
-    public QuestionEntity editQuestion(QuestionEntity questionEntity,String updatedQuestion){
+
+    public QuestionEntity editQuestion(QuestionEntity questionEntity, String updatedQuestion) {
         questionEntity.setContent(updatedQuestion);
         entityManager.merge(questionEntity);
         return questionEntity;
     }
 
-    public void deleteQuestion(QuestionEntity questionEntity){
-         entityManager.remove(questionEntity);
+    public void deleteQuestion(QuestionEntity questionEntity) {
+        entityManager.remove(questionEntity);
     }
 
-    public List<QuestionEntity> getAllQuestionsOfUser(final UserEntity user){
+    public List<QuestionEntity> getAllQuestionsOfUser(final UserEntity user) {
         try {
             return entityManager.createNamedQuery("getQuestionByUserId", QuestionEntity.class).setParameter("user", user).getResultList();
         } catch (NoResultException nre) {
@@ -117,12 +115,13 @@ public class UserDao {
         }
     }
 
+    //Methods for Answer Controller
     public AnswerEntity createAnswer(AnswerEntity answerEntity) {
         entityManager.persist(answerEntity);
         return answerEntity;
     }
 
-    public AnswerEntity getAnswerById(String answerId){
+    public AnswerEntity getAnswerById(String answerId) {
         try {
             return entityManager.createNamedQuery("getAnswerById", AnswerEntity.class).setParameter("uuid", answerId)
                     .getSingleResult();
@@ -130,16 +129,18 @@ public class UserDao {
             return null;
         }
     }
-    public AnswerEntity editAnswer(AnswerEntity answerEntity,String updatedAnswer){
+
+    public AnswerEntity editAnswer(AnswerEntity answerEntity, String updatedAnswer) {
         answerEntity.setAns(updatedAnswer);
         entityManager.merge(answerEntity);
         return answerEntity;
     }
-    public void deleteAnswer(AnswerEntity answerEntity){
+
+    public void deleteAnswer(AnswerEntity answerEntity) {
         entityManager.remove(answerEntity);
     }
 
-    public List<AnswerEntity> getAllAnswersOfQuestion(final QuestionEntity question){
+    public List<AnswerEntity> getAllAnswersOfQuestion(final QuestionEntity question) {
         try {
             return entityManager.createNamedQuery("getAnswersByQuestionId", AnswerEntity.class).setParameter("question", question).getResultList();
         } catch (NoResultException nre) {
